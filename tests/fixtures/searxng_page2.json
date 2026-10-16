@@ -1,0 +1,8 @@
+{
+  "query": "python developer berlin",
+  "results": [
+    {"url": "https://careers.example/backend", "title": "Backend Engineer (Python)", "content": "Remote-friendly team in Berlin.", "engine": "duckduckgo"},
+    {"url": "https://forum.example/thread/42", "title": "Salaries for Python devs", "content": "Discussion thread.", "engine": "brave"}
+  ],
+  "unresponsive_engines": []
+}

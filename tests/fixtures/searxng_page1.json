@@ -1,0 +1,13 @@
+{
+  "query": "python developer berlin",
+  "number_of_results": 0,
+  "results": [
+    {"url": "https://jobs.example/python-berlin", "title": "Python Developer  (m/w/d) – Berlin", "content": "We are hiring a Python developer\nin Berlin.", "engine": "duckduckgo", "engines": ["duckduckgo", "brave"], "score": 3.0},
+    {"url": "https://blog.example/python-in-berlin", "title": "Python in Berlin", "content": "Meetups and companies.", "engine": "brave", "score": 1.5},
+    {"url": "https://jobs.example/python-berlin#apply", "title": "Python Developer – apply", "content": "Duplicate with a fragment.", "engine": "bing", "score": 1.0},
+    {"url": "magnet:?xt=urn:btih:abc", "title": "Not a web page", "content": "", "engine": "piratebay"}
+  ],
+  "answers": [],
+  "suggestions": [],
+  "unresponsive_engines": [["google", "timeout"]]
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>How We Cut Our Build Times in Half | Northwind Engineering Blog</title>
+  <meta name="description" content="A practical walkthrough of caching, parallelism and profiling that halved our CI build times.">
+  <meta name="author" content="Jane Doe">
+  <meta property="og:title" content="How We Cut Our Build Times in Half">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-03-14T09:00:00Z">
+  <link rel="canonical" href="/blog/build-times">
+  <link rel="stylesheet" href="/static/site.css">
+  <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}</script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="/"><img src="/static/logo@2x.png" alt="Northwind"></a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="/careers">Careers</a>
+      <a href="/about#team">About us</a>
+      <a href="https://github.com/northwind">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <article>
+      <h1>How We Cut Our Build Times in Half</h1>
+      <p class="byline">By Jane Doe · March 14, 2026</p>
+
+      <p>For most of last year our continuous integration pipeline was the slowest part of shipping a change.
+        A typical pull request waited more than twenty minutes for a green build, and engineers had started
+        batching unrelated changes together just to avoid the wait. This post describes the three changes that
+        brought the median build down from twenty-two minutes to just under eleven.</p>
+
+      <h2>1. Cache what is expensive to rebuild</h2>
+      <p>The first and largest win came from caching dependency installation and compiled artifacts between runs.
+        We keyed the cache on the lock file hash, so a cache entry is reused until dependencies actually change.
+        Restoring the cache takes about forty seconds, while a cold install used to take more than six minutes.</p>
+
+      <h2>2. Run independent jobs in parallel</h2>
+      <p>Our test suite had grown into a single sequential job. Splitting it into four shards that run on separate
+        machines reduced wall-clock time dramatically. We balance the shards by historical test duration rather than
+        by file count, which keeps every shard finishing within a minute of the others.</p>
+      <ul>
+        <li>Unit tests: four shards</li>
+        <li>Integration tests: two shards</li>
+        <li>Linting and type checks: one job</li>
+      </ul>
+
+      <h2>3. Profile before optimizing</h2>
+      <p>Finally, we profiled the remaining steps instead of guessing. Two surprisingly slow steps were a container
+        image pull that could be avoided entirely and a documentation build that only needs to run on the main branch.
+        Removing those from the pull request pipeline saved another two minutes per run.</p>
+      <p>If you want to learn more, read our <a href="/blog/ci-caching-deep-dive">deep dive on CI caching</a>
+        or the <a href="https://docs.example.org/ci/sharding">sharding documentation</a>.</p>
+    </article>
+  </main>
+
+  <footer>
+    <p>Northwind Engineering · 100 Main Street, Springfield</p>
+    <p>Contact: <a href="mailto:press@northwind.example?subject=Hello">press@northwind.example</a>
+      or engineering@northwind.example. Phone: <a href="tel:+1-212-555-0147">+1 212 555 0147</a></p>
+    <p><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="javascript:void(0)">Cookie settings</a></p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,82 @@
+# Конфиг web-scraper. Скопируйте в config.yaml (или укажите путь в WEB_SCRAPER_CONFIG).
+# Любой ключ можно опустить — будет значение по умолчанию.
+
+server:
+  host: 127.0.0.1          # слушать только локально; 0.0.0.0 — открыть в сеть (авторизации нет!)
+  port: 8765
+
+searxng:
+  url: http://localhost:8080   # ваш SearXNG; нужен formats: [html, json] в его settings.yml
+  timeout: 15
+  default_lang: en             # язык по умолчанию, если агент не передал lang
+  default_region: null         # например DE
+  max_pages: 3                 # сколько страниц выдачи догружать, чтобы набрать num_results
+
+http:
+  timeout: 20                  # секунд на запрос
+  connect_timeout: 10
+  max_retries: 3               # ретраи на таймауты, сетевые ошибки и 429/5xx
+  backoff_base: 1.0            # задержка = base * 2^попытка ± 50% (учитывается Retry-After)
+  backoff_max: 30
+  max_response_bytes: 5000000  # больше — ответ обрезается
+  proxy: null                  # например http://user:pass@host:3128 — применяется и к браузеру
+  verify_ssl: true
+  accept_language: en-US,en;q=0.9
+  # user_agents: [...]         # свой список для ротации; по умолчанию — актуальные десктопные браузеры
+  # user_agent_overrides:      # домен → фиксированный User-Agent (по умолчанию так для проектов Wikimedia,
+  #   wikipedia.org: "web-scraper/0.1 (+https://github.com/Greed030/WebScrapper)"   # они блокируют «браузеры»)
+
+browser:
+  enabled: true                # Playwright-fallback для JS-страниц
+  headless: true
+  timeout: 30
+  wait_until: networkidle      # load | domcontentloaded | networkidle
+  min_text_chars: 300          # меньше видимого текста после httpx — рендерим в браузере
+  max_concurrent: 2
+
+rate_limit:
+  default_rps: 1.0             # запросов в секунду на домен; 0 — без ограничения
+  domains:
+    linkedin.com: 0.1          # переопределения по домену (покрывают поддомены)
+
+cache:
+  enabled: true
+  path: data/cache.sqlite      # относительно папки с этим конфигом
+  ttl_seconds: 86400
+
+output:
+  max_chars: 20000             # текст страницы в fetch по умолчанию
+  max_chars_limit: 100000      # потолок для max_chars из запроса
+  max_links: 200
+  page_chars_in_batch: 3000    # текст одной страницы в crawl / search_and_fetch
+  max_total_chars: 60000       # суммарный текст ответа crawl / search_and_fetch
+
+contacts:
+  phone_region: null           # регион для телефонов без +кода (например DE); null — только +международные
+
+crawl:
+  max_depth_cap: 5
+  max_pages_cap: 100
+  concurrency: 4
+  respect_robots: true
+
+llm:
+  provider: anthropic          # anthropic | openai | ollama
+  model: claude-haiku-5-5      # openai: например gpt-4.1-mini; ollama: например qwen2.5:7b
+  api_key_env: ANTHROPIC_API_KEY   # имя переменной окружения с ключом (OPENAI_API_KEY для openai, null для ollama)
+  base_url: null               # свой endpoint; для ollama по умолчанию http://localhost:11434
+  max_input_chars: 40000       # сколько текста страницы отправлять в модель
+  max_tokens: 16000
+  timeout: 120
+  effort: low                  # только anthropic: low | medium | high | xhigh | max | null
+
+plugins:
+  linkedin:
+    enabled: false             # только публичные гостевые страницы и jobs-guest, без логина
+    min_interval_s: 10         # пауза между запросами (в коде не меньше 3 с)
+    jitter_s: 3
+    cooldown_on_429_s: 900     # после 429/999 — пауза для всех запросов к LinkedIn
+
+logging:
+  level: INFO
+  file: null                   # например logs/web_scraper.log
